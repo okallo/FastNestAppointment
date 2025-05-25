@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import UUID, and_, or_
+from sqlalchemy import and_, or_
+from uuid import UUID
 from datetime import datetime
 from app.db.session import SessionLocal
 from app.models.appointment import Appointment, AppointmentStatus
 from app.schemas.appointment import AppointmentCreate, AppointmentOut
+from app.dependencies.auth import require_role
+from app.models.user import Role
 
 router = APIRouter()
 
@@ -14,7 +17,7 @@ def get_db():
         yield db
     finally:
         db.close()
-
+#@router.post("/", dependencies=[Depends(require_role([Role.doctor, Role.admin]))])
 @router.post("/", response_model=AppointmentOut)
 def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_db)):
     # Check for doctor schedule conflicts

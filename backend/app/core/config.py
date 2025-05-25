@@ -10,5 +10,5 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         extra="allow"
-
+        orm_mode = True
 settings = Settings()

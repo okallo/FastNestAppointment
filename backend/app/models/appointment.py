@@ -1,9 +1,10 @@
-from sqlalchemy import UUID, Column, String, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship
-from uuid import uuid4
-from app.db.session import Base
-import enum
 import uuid
+from sqlalchemy import Column, String, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import relationship
+
+from app.db.session import Base
+from sqlalchemy.dialects.postgresql import UUID
+import enum
 
 class AppointmentStatus(str, enum.Enum):
     scheduled = "scheduled"
