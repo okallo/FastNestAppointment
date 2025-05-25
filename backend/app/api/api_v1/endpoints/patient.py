@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.patient import PatientCreate, PatientOut
@@ -20,3 +21,8 @@ def register_patient(payload: PatientCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(patient)
     return patient
+
+@router.get("/", response_model=List[PatientOut])
+def get_patients(db: Session = Depends(get_db)):
+    patients = db.query(models.Patient).all()
+    return patients
