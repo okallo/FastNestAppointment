@@ -1,7 +1,7 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "HealthCareAPI"
+    PROJECT_NAME: str = "HealthCareApp"
     DATABASE_URL: str
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -9,5 +9,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra="allow"
 
 settings = Settings()
