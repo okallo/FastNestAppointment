@@ -1,4 +1,4 @@
-import DoctorTimeOffForm from '@/components/DoctorTimeOffForm'
+import DoctorTimeOffForm from '@/app/components/DoctorTimeOffForm'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 
