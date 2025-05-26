@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from app.dependencies.auth import require_role
 from app.models.user import User
 from app.schemas.user import UserCreate, UserOut
+from app.models.enums import Role
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -18,14 +19,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    access_token, refresh_token = create_token_pair({"sub": user.email, "role": user.role})
+    access_token, refresh_token = create_token_pair({"sub": user.email, "role": user.role.value})
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
 
-@router.post("/register", response_model=UserOut, dependencies=[Depends(require_role(["admin"]))])
+@router.post("/register", response_model=UserOut, dependencies=[Depends(require_role([Role.admin]))])
 def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user_in.email).first()
     if existing_user:
@@ -46,7 +47,7 @@ def refresh_token(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         sub = payload.get("sub")
-        role = payload.get("role")
+        role = Role(payload.get("role"))
         new_token = create_access_token({"sub": sub, "role": role})
         return {"access_token": new_token}
     except JWTError:

@@ -10,4 +10,5 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         extra="allow"
+        from_attributes = True
 settings = Settings()

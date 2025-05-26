@@ -1,13 +1,11 @@
-from sqlalchemy import Column, String, Enum
+from sqlalchemy import Column, String, Enum as SqlEnum
 from app.db.base_class import Base
 from sqlalchemy.orm import relationship
 from uuid import uuid4
-import enum
 
-class Role(str, enum.Enum):
-    admin = "admin"
-    doctor = "doctor"
-    patient = "patient"
+from app.models.enums import Role
+
+
 
 class User(Base):
     __tablename__ = "users"
@@ -15,5 +13,5 @@ class User(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(Role), nullable=False)
+    role = Column(SqlEnum(Role), nullable=False)
     created_records = relationship("MedicalRecord", back_populates="doctor")

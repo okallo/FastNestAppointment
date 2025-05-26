@@ -1,8 +1,8 @@
 import uuid
-from sqlalchemy import Column, DateTime, ForeignKey, String
+from sqlalchemy import Column, DateTime, ForeignKey, String, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
-
+from app.models.enums import TimeOffStatusEnum
 class DoctorTimeOff(Base):
     __tablename__ = "doctor_time_off"
 
@@ -11,3 +11,4 @@ class DoctorTimeOff(Base):
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     reason = Column(String, nullable=False)
+    status = Column(SQLEnum(TimeOffStatusEnum, name="time_off_status"), nullable=False, default=TimeOffStatusEnum.pending)

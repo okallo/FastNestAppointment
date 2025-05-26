@@ -1,10 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from enum import Enum
 
-class Role(str, Enum):
-    admin = "admin"
-    doctor = "doctor"
-    patient = "patient"
+from app.models.enums import Role
+
 
 class UserCreate(BaseModel):
     email: EmailStr

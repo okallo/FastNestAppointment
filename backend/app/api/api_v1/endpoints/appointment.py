@@ -2,16 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, update
 from uuid import UUID
-from datetime import datetime
 from app.db.session import SessionLocal
 from app.models.appointment import Appointment, AppointmentStatus
 from app.schemas.appointment import AppointmentCreate, AppointmentOut
-from app.dependencies.auth import require_role
-from app.models.user import Role
 from app.dependencies.db import get_db
 from app.dependencies.auth import get_current_user
-from app.models.timeoff import DoctorTimeOff
-from app.schemas.timeoff import TimeOffCreate
 
 
 router = APIRouter()

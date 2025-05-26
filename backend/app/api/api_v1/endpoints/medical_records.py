@@ -4,7 +4,7 @@ from app.schemas.medical_record import MedicalRecordCreate, MedicalRecordOut
 from app.models.medical_record import MedicalRecord
 from app.models.user import User
 from app.dependencies.db import get_db
-from app.dependencies.auth import require_role, get_current_user
+from app.dependencies.auth import get_current_user
 
 router = APIRouter()
 
