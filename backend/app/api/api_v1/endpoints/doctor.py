@@ -14,7 +14,7 @@ def get_db():
         yield db
     finally:
         db.close()
-@router.post("/", dependencies=[Depends(require_role([Role.doctor, Role.admin]))])
+#@router.post("/", dependencies=[Depends(require_role([Role.doctor, Role.admin]))])
 @router.post("/", response_model=DoctorOut)
 def create_doctor(payload: DoctorCreate, db: Session = Depends(get_db)):
     doctor = Doctor(**payload.dict())

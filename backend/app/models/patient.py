@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, DateTime, UUID
+from sqlalchemy.orm import relationship
 from app.db.session import Base
 import uuid
 
@@ -10,3 +11,4 @@ class Patient(Base):
     email = Column(String, unique=True, nullable=False)
     phone = Column(String)
     insurance_number = Column(String)
+    medical_records = relationship("MedicalRecord", back_populates="patient")

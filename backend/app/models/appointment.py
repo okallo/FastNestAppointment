@@ -1,7 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-
 from app.db.session import Base
 from sqlalchemy.dialects.postgresql import UUID
 import enum
@@ -23,3 +22,4 @@ class Appointment(Base):
 
     patient = relationship("Patient", backref="appointments")
     doctor = relationship("Doctor", backref="appointments")
+    medical_record = relationship("MedicalRecord", back_populates="appointment", uselist=False)

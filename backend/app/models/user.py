@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Enum
 from app.db.base_class import Base
+from sqlalchemy.orm import relationship
 from uuid import uuid4
 import enum
 
@@ -15,3 +16,4 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(Role), nullable=False)
+    created_records = relationship("MedicalRecord", back_populates="doctor")

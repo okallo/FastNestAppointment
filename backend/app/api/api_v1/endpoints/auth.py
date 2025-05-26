@@ -3,12 +3,12 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.core.security import ALGORITHM, SECRET_KEY, create_token_pair, get_password_hash, verify_password, create_access_token
-from app.db.session import get_db
+from app.dependencies.db import get_db
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
-from backend.app.dependencies.auth import require_role
-from backend.app.models.user import User
-from backend.app.schemas.user import UserCreate, UserOut
+from app.dependencies.auth import require_role
+from app.models.user import User
+from app.schemas.user import UserCreate, UserOut
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
