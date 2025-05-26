@@ -1,15 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Props {
   onSubmit: (data: any) => void
+    initialData?: {
+    id?: string
+    start_time: string
+    end_time: string
+    reason?: string
+  } | null
 }
 
-export default function DoctorTimeOffForm({ onSubmit }: Props) {
+export default function DoctorTimeOffForm({ onSubmit,initialData  }: Props) {
   const [form, setForm] = useState({
     start_time: '',
     end_time: '',
     reason: '',
   })
+
+    useEffect(() => {
+    if (initialData) {
+      setForm({
+        start_time: initialData.start_time.slice(0, 16),
+        end_time: initialData.end_time.slice(0, 16),
+        reason: initialData.reason || '',
+      })
+    }
+  }, [initialData])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -40,7 +56,7 @@ export default function DoctorTimeOffForm({ onSubmit }: Props) {
       </label>
 
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Submit
+        {initialData ? 'Update' : 'Submit'}
       </button>
     </form>
   )
