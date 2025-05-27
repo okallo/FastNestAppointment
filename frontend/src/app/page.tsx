@@ -19,6 +19,9 @@ export default function Home() {
     const token = localStorage.getItem('access_token');
     if (!token) {
       router.replace('/pages/auth/login');
+      //router.replace('/pages/admin');
+      //router.replace('/pages/doctor');
+      //router.replace('/pages/patient');
       return;
     }
 
@@ -33,20 +36,20 @@ export default function Home() {
 
       switch (decoded.role) {
         case 'admin':
-          router.replace('/admin/dashboard');
+          router.replace('/pages/admin');
           break;
         case 'doctor':
-          router.replace('/doctor/dashboard');
+          router.replace('/pages/doctor');
           break;
         case 'patient':
-          router.replace('/patient/dashboard');
+          router.replace('/pages/patient');
           break;
         default:
-          router.replace('/login');
+          router.replace('/pages/auth/login');
       }
     } catch (error) {
       localStorage.removeItem('access_token');
-      router.replace('/login');
+      router.replace('/pages/auth/login');
     } finally {
       setLoading(false);
     }
