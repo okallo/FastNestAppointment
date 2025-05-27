@@ -1,0 +1,72 @@
+# ===== Backend (FastAPI - Python) =====
+backend/__pycache__/
+backend/*.py[cod]
+backend/*.pyo
+backend/*.pyd
+backend/env/
+backend/.env
+backend/venv/
+backend/.venv/
+backend/env.bak/
+backend/__pypackages__/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.tox/
+backend/dist/
+backend/build/
+backend/.coverage
+backend.coverage.*
+backend.cache/
+backend.pytest_cache/
+backend.ipynb_checkpoints/
+backend/*.sqlite3
+backend/*.log
+
+# VSCode settings for backend
+backend/.vscode/
+
+# ===== Frontend (Next.js - Node.js) =====
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.turbo/
+frontend/.vercel/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/.parcel-cache/
+frontend/.cache/
+
+# MacOS system files
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional npm cache directory
+.npm
+
+# dotenv environment variables files
+.env
+.env.*
+
+
+# Local IDE or editor folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
