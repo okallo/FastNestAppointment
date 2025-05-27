@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import Column, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from app.db.session import Base
+from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.enums import AppointmentStatus
@@ -18,6 +18,6 @@ class Appointment(Base):
     end_time = Column(DateTime, nullable=False)
     status = Column(Enum(AppointmentStatus), default=AppointmentStatus.scheduled)
 
-    patient = relationship("Patient", backref="appointments")
-    doctor = relationship("Doctor", backref="appointments")
+    patient = relationship("Patient", back_populates="appointments")
+    doctor = relationship("Doctor", back_populates="appointments")
     medical_record = relationship("MedicalRecord", back_populates="appointment", uselist=False)

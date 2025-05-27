@@ -7,10 +7,11 @@ from app.models.doctor import Doctor
 from app.schemas.doctor import DoctorCreate, DoctorOut
 from app.dependencies.auth import get_current_user, require_role
 from app.models.user import Role, User
-from app.schemas.availability import AvailabilityResponse
+from app.schemas.availability import AvailabilityOut
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.timeoff import DoctorTimeOff
 from app.schemas.timeoff import TimeOffCreate, TimeOffUpdate, TimeOffOut
+from app.core.security import get_password_hash
 
 
 router = APIRouter()
@@ -24,10 +25,25 @@ def get_db():
 
 @router.post("/", response_model=DoctorOut, dependencies=[Depends(require_role([Role.admin]))])
 def create_doctor(payload: DoctorCreate, db: Session = Depends(get_db)):
-    doctor = Doctor(**payload.dict())
+    # First create the user
+    if db.query(User).filter(User.email == payload.email).first():
+        raise HTTPException(status_code=400, detail="Doctor with this email already exists")
+
+    user = User(
+        email=payload.email,
+        username=payload.username,
+        hashed_password=get_password_hash(payload.password),
+        role=Role.doctor
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    doctor = Doctor(user_id=user.id, specialization=payload.specialization, availability=payload.availability)
     db.add(doctor)
     db.commit()
     db.refresh(doctor)
+
     return doctor
 
 @router.get("/", response_model=list[DoctorOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])

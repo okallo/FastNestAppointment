@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import Column, DateTime, ForeignKey, String, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
-from app.db.session import Base
+from app.db.base_class import Base
 from app.models.enums import TimeOffStatusEnum
 class DoctorTimeOff(Base):
     __tablename__ = "doctor_time_off"
