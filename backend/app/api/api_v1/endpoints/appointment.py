@@ -95,3 +95,12 @@ def get_patient_appointments(
     if user.role != Role.patient:
         raise HTTPException(status_code=403, detail="Only patients can access this route")
     return db.query(Appointment).filter(Appointment.patient_id == user.id).all()
+
+@router.get("/doctor/appointments", response_model=list[AppointmentOut])
+def get_doctor_appointments(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    if user.role != Role.doctor:
+        raise HTTPException(status_code=403, detail="Only doctors can access this route")
+    return db.query(Appointment).filter(Appointment.doctor_id == user.id).all()
