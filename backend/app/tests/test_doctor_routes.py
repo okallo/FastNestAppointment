@@ -1,3 +1,4 @@
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -5,11 +6,13 @@ from sqlalchemy.orm import sessionmaker
 
 from app.main import app  
 from app.db.base_class import Base  
-from app.db.session import get_db
+from app.dependencies.db import get_db
 from app.core.security import get_password_hash
 from app.models.user import User, Role
 from app.models.doctor import Doctor
 from uuid import uuid4
+
+from app.dependencies.auth import get_current_user
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -46,28 +49,43 @@ def setup_database():
     yield
     Base.metadata.drop_all(bind=engine)
 
+mock_user = User(id=uuid4(), username="doctoradmin", email="doctor1@example.com", role="admin")
+app.dependency_overrides[get_current_user] = lambda: mock_user
 def test_create_doctor():
     payload = {
-        "email": "doctor1@example.com",
-        "username": "doctor1",
+        "email": "doctoro@example.com",
+        "username": "doctoro",
         "password": "strongpass",
         "specialization": "cardiology",
-        "license_number": "LIC123"
+        "license_number": "LIC129"
     }
 
-    response = client.post("/doctors/", json=payload)
+    response = client.post("/api/v1/doctors/", json=payload)
     assert response.status_code == 200
     data = response.json()
     assert data["specialization"] == "cardiology"
-    assert data["user"]["email"] == "doctor1@example.com"
+    assert data["user"]["email"] == "doctoro@example.com"
+
+def setup_test_doctor(db):
+    user = User(email="testdoctor1@example.com", username="testuser", hashed_password="hashed_password", role="doctor")
+    doctor = Doctor(user=user, specialization="Cardiology", license_number="LIC123")
+    db.add(user)
+    db.add(doctor)
+    db.commit()
+    db.refresh(doctor)
+
+    return doctor
 
 def test_list_doctors():
-    response = client.get("/doctors/")
+    db = next(override_get_db())
+    setup_test_doctor(db)
+    response = client.get("/api/v1/doctors/")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
 def test_set_doctor_time_off():
     db = next(override_get_db())
+    # doctor = setup_test_doctor(db)
     doctor = db.query(Doctor).first()
 
     payload = {
@@ -77,15 +95,17 @@ def test_set_doctor_time_off():
 
     
     from app.dependencies.auth import get_current_user
-    app.dependency_overrides[get_current_user] = lambda: doctor.user
-
-    response = client.post("/doctors/time_off", json=payload)
+    #app.dependency_overrides[get_current_user] = lambda: doctor.user
+    doctor.user.id = get_current_user().id
+    #doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+    response = client.post("/api/v1/doctors/time_off", json=payload)
+    print(response.json())
     assert response.status_code == 201
 
 def test_get_doctor_time_off():
     db = next(override_get_db())
     doctor = db.query(Doctor).first()
-    response = client.get(f"/doctors/{doctor.id}/time_off")
+    response = client.get(f"/api/v1/doctors/{doctor.id}/time_off")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
@@ -99,7 +119,7 @@ def test_update_time_off():
         "end_time": time_off.end_time
     }
 
-    response = client.patch(f"/doctors/time_off/{time_off.id}", json=payload)
+    response = client.patch(f"/api/v1/doctors/time_off/{time_off.id}", json=payload)
     assert response.status_code == 200
     assert response.json()["approved"] == True
 
@@ -107,5 +127,5 @@ def test_delete_time_off():
     db = next(override_get_db())
     time_off = db.query(Doctor).first().time_offs[0]
 
-    response = client.delete(f"/doctors/time_off/{time_off.id}")
+    response = client.delete(f"/api/v1/doctors/time_off/{time_off.id}")
     assert response.status_code == 204
