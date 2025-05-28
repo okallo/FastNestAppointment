@@ -10,4 +10,4 @@ class AuditLog(Base):
     actor_email = Column(String, index=True)
     action = Column(String)
     details = Column(Text)
-    timestamp = Column(DateTime, default=datetime.timezone.utcnow)
+    timestamp = Column(DateTime, default=datetime.now)

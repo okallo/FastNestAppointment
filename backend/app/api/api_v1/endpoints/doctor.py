@@ -7,10 +7,11 @@ from app.models.doctor import Doctor
 from app.schemas.doctor import DoctorCreate, DoctorOut
 from app.dependencies.auth import get_current_user, require_role
 from app.models.user import Role, User
-from app.schemas.availability import AvailabilityResponse
+from app.schemas.availability import AvailabilityOut
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.timeoff import DoctorTimeOff
 from app.schemas.timeoff import TimeOffCreate, TimeOffUpdate, TimeOffOut
+from app.core.security import get_password_hash
 
 
 router = APIRouter()
@@ -24,24 +25,42 @@ def get_db():
 
 @router.post("/", response_model=DoctorOut, dependencies=[Depends(require_role([Role.admin]))])
 def create_doctor(payload: DoctorCreate, db: Session = Depends(get_db)):
-    doctor = Doctor(**payload.dict())
+    # First create the user
+    if db.query(User).filter(User.email == payload.email).first():
+        raise HTTPException(status_code=400, detail="Doctor with this email already exists")
+
+    user = User(
+        email=payload.email,
+        username=payload.username,
+        hashed_password=get_password_hash(payload.password),
+        role=Role.doctor
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    doctor = Doctor(user_id=user.id, specialization=payload.specialization, license_number=payload.license_number)
     db.add(doctor)
     db.commit()
     db.refresh(doctor)
+
     return doctor
 
 @router.get("/", response_model=list[DoctorOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])
 def list_doctors(db: Session = Depends(get_db)):
     return db.query(Doctor).all()
 
-@router.post("/doctors/time_off", status_code=201,response_model=TimeOffOut, dependencies=[Depends(require_role([Role.doctor]))])
+@router.post("/time_off", status_code=201,response_model=TimeOffOut, dependencies=[Depends(require_role([Role.doctor]))])
 def set_doctor_time_off(payload: TimeOffCreate, db: Session = Depends(get_db)):
+    doctor = db.query(Doctor).filter(Doctor.user_id == get_current_user.id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor profile not found")
     time_off = DoctorTimeOff(**payload.dict())
     db.add(time_off)
     db.commit()
     return {"message": "Time off set successfully"}
 
-@router.get("/doctors/{doctor_id}/time_off", response_model=List[TimeOffOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])
+@router.get("/{doctor_id}/time_off", response_model=List[TimeOffOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])
 def get_doctor_time_off(doctor_id: UUID, db: Session = Depends(get_db)):
     return db.query(DoctorTimeOff).filter(DoctorTimeOff.doctor_id == doctor_id).all()
 

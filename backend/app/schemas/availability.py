@@ -1,14 +1,22 @@
 from pydantic import BaseModel
 from datetime import datetime
-class AvailabilityCreate(BaseModel):
+from uuid import UUID
+
+from app.schemas.doctor import DoctorOut
+
+class AvailabilityBase(BaseModel):
     start_time: datetime
     end_time: datetime
 
-class AvailabilityResponse(BaseModel):
+class AvailabilityCreate(AvailabilityBase):
+    doctor_id: UUID
+
+class AvailabilityOut(AvailabilityBase):
     id: int
+    is_booked: bool
     start_time: datetime
     end_time: datetime
-    is_booked: bool
+    doctor: DoctorOut
 
     class Config:
         from_attributes = True

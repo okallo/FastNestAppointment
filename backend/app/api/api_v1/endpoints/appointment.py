@@ -50,20 +50,23 @@ def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_db)
 def list_appointments(db: Session = Depends(get_db)):
     return db.query(Appointment).all()
 
-@router.patch("/{appointment_id}/status", response_model=AppointmentOut)
+@router.patch("/{appointment_id}/status", response_model=AppointmentOut, )
 def update_appointment_status(
     appointment_id: UUID,
     status: AppointmentStatus,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
+    print(user)
+    
     appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     # Role-based access control
-    if get_current_user.role == "doctor" and update.status != AppointmentStatus.completed:
+    if user.role == "doctor" and status != AppointmentStatus.completed:
         raise HTTPException(status_code=403, detail="Doctor can only mark as completed")
 
-    if get_current_user.role == "patient" and update.status != AppointmentStatus.cancelled:
+    if user.role == "patient" and status != AppointmentStatus.cancelled:
         raise HTTPException(status_code=403, detail="Patient can only cancel")
     
     appointment.status = status

@@ -12,11 +12,14 @@ from app.schemas.user import UserCreate, UserOut
 from app.models.enums import Role
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/login")
+
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
+    print(form_data.password , user.hashed_password)
     if not user or not verify_password(form_data.password, user.hashed_password):
+       
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
     access_token, refresh_token = create_token_pair({"sub": user.email, "role": user.role.value})
@@ -32,11 +35,8 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    user = User(
-        email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
-        role=user_in.role
-    )
+    hashed_pw = get_password_hash(user_in.password)
+    user = User(email=user_in.email, username=user_in.username, hashed_password=hashed_pw, role=user_in.role)
     db.add(user)
     db.commit()
     db.refresh(user)
