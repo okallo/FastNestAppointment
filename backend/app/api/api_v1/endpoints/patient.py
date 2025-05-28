@@ -32,14 +32,14 @@ def register_patient(payload: PatientCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    patient = models(user_id=user.id, insurance_number=payload.insurance_number)
+    patient = models.Patient(user_id=user.id, insurance_number=payload.insurance_number)
     db.add(patient)
     db.commit()
     db.refresh(patient)
 
     return patient
 
-@router.get("/", response_model=List[PatientOut])
+@router.get("/all", response_model=List[PatientOut])
 def get_patients(db: Session = Depends(get_db)):
     patients = db.query(models.Patient).all()
     return patients

@@ -50,14 +50,14 @@ def create_doctor(payload: DoctorCreate, db: Session = Depends(get_db)):
 def list_doctors(db: Session = Depends(get_db)):
     return db.query(Doctor).all()
 
-@router.post("/doctors/time_off", status_code=201,response_model=TimeOffOut, dependencies=[Depends(require_role([Role.doctor]))])
+@router.post("/time_off", status_code=201,response_model=TimeOffOut, dependencies=[Depends(require_role([Role.doctor]))])
 def set_doctor_time_off(payload: TimeOffCreate, db: Session = Depends(get_db)):
     time_off = DoctorTimeOff(**payload.dict())
     db.add(time_off)
     db.commit()
     return {"message": "Time off set successfully"}
 
-@router.get("/doctors/{doctor_id}/time_off", response_model=List[TimeOffOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])
+@router.get("/{doctor_id}/time_off", response_model=List[TimeOffOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])
 def get_doctor_time_off(doctor_id: UUID, db: Session = Depends(get_db)):
     return db.query(DoctorTimeOff).filter(DoctorTimeOff.doctor_id == doctor_id).all()
 

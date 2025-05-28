@@ -5,3 +5,5 @@ from .appointment import Appointment
 from .medical_record import MedicalRecord
 from .timeoff import DoctorTimeOff
 from .availability import Availability
+from .audit import AuditLog
+

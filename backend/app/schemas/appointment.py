@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
 from enum import Enum
+from app.schemas.doctor import DoctorOut
+from app.schemas.patient import PatientOut
 
 class AppointmentStatus(str, Enum):
     scheduled = "scheduled"
@@ -20,3 +22,7 @@ class AppointmentCreate(AppointmentBase):
 class AppointmentOut(AppointmentBase):
     id: UUID
     status: AppointmentStatus
+    patient: PatientOut
+    doctor: DoctorOut
+    start_time: datetime
+    end_time: datetime

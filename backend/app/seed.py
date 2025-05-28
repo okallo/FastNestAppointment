@@ -12,7 +12,10 @@ from app.db.base_class import Base
 from app.core.security import get_password_hash
 from datetime import datetime, timedelta
 import uuid
+from sqlalchemy import text
+from datetime import datetime, timezone
 
+now = datetime.now(timezone.utc)
 # Create all tables
 Base.metadata.create_all(bind=engine)
 
@@ -43,7 +46,7 @@ def seed_users(db):
 
     db.add_all([admin_user, doctor_user, patient_user])
     db.commit()
-    print("👤 Seeded users")
+    print(" Seeded users")
     return doctor_user, patient_user
 
 def seed_doctors_patients(db, doctor_user, patient_user):
@@ -63,11 +66,11 @@ def seed_doctors_patients(db, doctor_user, patient_user):
 
     db.add_all([doctor, patient])
     db.commit()
-    print("🩺 Seeded doctor and patient")
+    print("Seeded doctor and patient")
     return doctor, patient
 
 def seed_availability(db, doctor_id):
-    now = datetime.utcnow()
+    #now = datetime.utcnow()
     availability_slots = [
         Availability(
             doctor_id=doctor_id,
@@ -91,7 +94,9 @@ def seed_timeoff(db, doctor_id):
         id=uuid.uuid4(),
         doctor_id=doctor_id,
         start_time=datetime.utcnow() + timedelta(days=1, hours=1),
-        end_time=datetime.utcnow() + timedelta(days=1, hours=3)
+        end_time=datetime.utcnow() + timedelta(days=1, hours=3),
+        reason="Personal leave",   
+        status="pending",          
     )
     db.add(time_off)
     db.commit()
@@ -112,29 +117,45 @@ def seed_appointments(db, doctor_id, patient_id):
     print(" Seeded appointment")
     return appointment
 
-def seed_records(db, doctor_id, patient_id, appointment_id):
+def seed_records(db, appointment_id):
     record = MedicalRecord(
         id=uuid.uuid4(),
-        doctor_id=doctor_id,
-        patient_id=patient_id,
         appointment_id=str(appointment_id),
-        diagnosis="Hypertension",
         notes="Recommend exercise",
         created_at=datetime.utcnow()
     )
     db.add(record)
     db.commit()
     print(" Seeded medical record")
+def truncate_tables(db):
+    # List all your tables here exactly as they appear in the DB
+    tables = [
+        "medical_records",
+        "appointments",
+        "doctor_time_off",
+        "availability",
+        "patients",
+        "doctors",
+        '"users"'
+    ]
+    # Create a comma-separated string of tables
+    tables_str = ", ".join(tables)
+
+    # Execute TRUNCATE with restart identity and cascade
+    db.execute(text(f"TRUNCATE TABLE {tables_str} RESTART IDENTITY CASCADE;"))
+    db.commit()
+    print(" Truncated all tables")
 
 def run_seed():
     try:
         with SessionLocal() as db:
+            truncate_tables(db)
             doctor_user, patient_user = seed_users(db)
             doctor, patient = seed_doctors_patients(db, doctor_user, patient_user)
             seed_availability(db, doctor.id)
             seed_timeoff(db, doctor.id)
             appointment = seed_appointments(db, doctor.id, patient.id)
-            seed_records(db, doctor.id, patient.id, appointment.id)
+            seed_records(db, appointment.id)
             print(" Seeding complete.")
     except Exception as e:
         print(f" Seeding failed: {e}")

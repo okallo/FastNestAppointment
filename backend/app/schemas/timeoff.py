@@ -3,8 +3,8 @@ from typing import  Optional
 from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
-
 from app.models.enums import TimeOffStatusEnum
+from app.schemas.doctor import DoctorOut
 
 
 
@@ -30,6 +30,11 @@ class TimeOffUpdate(BaseModel):
 
 class TimeOffOut(TimeOffCreate):
     id: UUID
+    reason: str
+    status: TimeOffStatusEnum
+    start_date: datetime
+    end_date: datetime
+    doctor: DoctorOut
     
 
 
