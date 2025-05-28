@@ -1,14 +1,9 @@
-
 from typing import  Optional
 from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
 from app.models.enums import TimeOffStatusEnum
 from app.schemas.doctor import DoctorOut
-
-
-
-
 
 class TimeOffBase(BaseModel):
     doctor_id: UUID

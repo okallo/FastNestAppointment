@@ -26,3 +26,4 @@ class AppointmentOut(AppointmentBase):
     doctor: DoctorOut
     start_time: datetime
     end_time: datetime
+

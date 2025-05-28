@@ -13,3 +13,4 @@ class Doctor(Base):
     user = relationship("User", back_populates="doctor")
     availability = relationship("Availability", back_populates="doctor")
     appointments = relationship("Appointment", back_populates="doctor")
+    time_offs = relationship("DoctorTimeOff", back_populates="doctor", cascade="all, delete-orphan")

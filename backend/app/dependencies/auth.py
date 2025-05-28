@@ -6,7 +6,7 @@ from app.dependencies.db import get_db
 from app.models import user
 from app.core.security import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db=Depends(get_db)) -> User:
     try:
