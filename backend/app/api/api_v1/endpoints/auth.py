@@ -26,7 +26,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user": user
     }
 
 @router.post("/register", response_model=UserOut, dependencies=[Depends(require_role([Role.admin]))])

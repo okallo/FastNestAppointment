@@ -8,6 +8,7 @@ class Availability(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     doctor_id = Column(UUID(as_uuid=True), ForeignKey("doctors.id"))
+    day_of_week: int = Column(Integer, nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     is_booked = Column(Boolean, default=False)
