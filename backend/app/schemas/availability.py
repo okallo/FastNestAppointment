@@ -8,17 +8,16 @@ class AvailabilityBase(BaseModel):
     doctor_id: UUID
     start_time: datetime
     end_time: datetime
+    day_of_week: int
+
 
 class AvailabilityCreate(AvailabilityBase):
     pass
 
 class AvailabilityOut(AvailabilityBase):
     id: int
-    is_booked: bool
-    day_of_week: int
-    start_time: datetime
-    end_time: datetime
     doctor: DoctorOut
+    is_booked: bool
 
     class Config:
         from_attributes = True

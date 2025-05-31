@@ -70,16 +70,17 @@ def seed_doctors_patients(db, doctor_user, patient_user):
     return doctor, patient
 
 def seed_availability(db, doctor_id):
-    #now = datetime.utcnow()
     availability_slots = [
         Availability(
             doctor_id=doctor_id,
+            day_of_week=now.weekday(),
             start_time=now + timedelta(days=2, hours=9),
             end_time=now + timedelta(days=2, hours=10),
             is_booked=False
         ),
         Availability(
             doctor_id=doctor_id,
+            day_of_week=now.weekday(),
             start_time=now + timedelta(days=2, hours=10),
             end_time=now + timedelta(days=2, hours=11),
             is_booked=False
@@ -88,6 +89,7 @@ def seed_availability(db, doctor_id):
     db.add_all(availability_slots)
     db.commit()
     print(" Seeded availability slots")
+
 
 def seed_timeoff(db, doctor_id):
     time_off = DoctorTimeOff(
