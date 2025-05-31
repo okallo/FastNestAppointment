@@ -184,54 +184,54 @@ sequenceDiagram
 ```mermaid
 erDiagram
     USER {
-        int id PK
+        stringid PK
         string name
         string email
         string role
     }
     DOCTOR {
-        int id PK
+        stringid PK
         string specialty
         string license_number
-        int user_id FK
+        stringuser_id FK
     }
     PATIENT {
-        int id PK
+        stringid PK
         string insurance
-        int user_id FK
+        stringuser_id FK
     }
     APPOINTMENT {
-        int id PK
+        stringid PK
         datetime time
-        int patient_id FK
-        int doctor_id FK
+        stringpatient_id FK
+        stringdoctor_id FK
         string status
     }
     AVAILABILITY {
-        int id PK
-        int doctor_id FK
+        stringid PK
+        stringdoctor_id FK
         string day_of_week
         time start_time
         time end_time
     }
     TIMEOFF {
-        int id PK
-        int doctor_id FK
+        stringid PK
+        stringdoctor_id FK
         date start_date
         date end_date
         string reason
     }
     MEDICAL_RECORD {
-        int id PK
-        int appointment_id FK
-        int patient_id FK
-        int doctor_id FK
+        stringid PK
+        stringappointment_id FK
+        stringpatient_id FK
+        stringdoctor_id FK
         string notes
         datetime created_at
     }
     AUDIT_LOG {
-        int id PK
-        int user_id FK
+        stringid PK
+        stringuser_id FK
         string action
         datetime timestamp
     }
