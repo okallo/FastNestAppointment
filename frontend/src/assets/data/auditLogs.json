@@ -1,0 +1,14 @@
+[
+  {
+    "timestamp": "2025-05-30T10:45:00",
+    "action": "Created new patient record",
+    "details": "John Doe's medical record created",
+    "actor_email": "admin@example.com"
+  },
+  {
+    "timestamp": "2025-05-30T09:30:00",
+    "action": "Updated doctor profile",
+    "details": "Dr. Jane Smith profile updated",
+    "actor_email": "admin@example.com"
+  }
+]

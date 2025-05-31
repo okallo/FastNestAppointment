@@ -46,7 +46,7 @@ def create_appointment(payload: AppointmentCreate, db: Session = Depends(get_db)
     db.refresh(appointment)
     return appointment
 
-@router.get("/", response_model=list[AppointmentOut])
+@router.get("/all", response_model=list[AppointmentOut])
 def list_appointments(db: Session = Depends(get_db)):
     return db.query(Appointment).all()
 
