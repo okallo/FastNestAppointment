@@ -2,6 +2,60 @@
 ### Live link:
 - https://fastnestappointment.onrender.com/docs
 
+#### 🔐 Test Credentials
+
+Use the following test accounts to interact with the API during development or testing:
+
+| Role    | Email                 | Password     |
+|---------|-----------------------|--------------|
+| Admin   | `admin@example.com`   | `admin123`   |
+| Doctor  | `doctor@example.com`  | `doctor123`  |
+| Patient | `patient@example.com` | `password123`|
+
+> ✅ **Note:** These credentials are for **testing purposes only** and should **not** be used in a production environment.
+
+---
+
+
+
+**Appointment APP** is a healthcare scheduling application designed to help clinics manage doctor–patient appointments. It enables patients to register and book available time slots with doctors, tracks doctor availability and time-off, and stores medical records for completed visits.
+
+Key features include:
+
+- **Role-Based User Accounts** (Patients, Doctors, Admins)
+- **Doctor Availability & Time-Off Management**
+- **Appointment Booking & Scheduling**
+- **Medical Records for Patient Visits**
+- **Audit Logging of User Actions for Accountability**
+
+---
+
+## 🧑‍⚕️ Role-Based Users
+- Patients, doctors, and admin staff
+- Fields: `id`, `name`, `email`, `role`, etc.
+
+## 👨‍⚕️ Doctor Profiles
+- Doctors have specialties and can set availability or request time-off.
+
+## 📅 Appointment Scheduling
+- Patients can view available slots and book an appointment.
+
+## 📋 Medical Records
+- After each visit, doctors create records containing notes and diagnosis.
+
+## 📜 Audit Log
+- All user actions (e.g. booking, record creation) are logged with timestamps.
+
+---
+
+## 🚀 Installation
+
+To set up the project locally:
+
+### 1. Clone the repository
+```
+
+
 **Appointment APP** is a healthcare scheduling application designed to help clinics manage doctor–patient appointments. It enables patients to register and book available time slots with doctors, tracks doctor availability and time-off, and stores medical records for completed visits.
 
 Key features include:
@@ -151,6 +205,53 @@ uvicorn app.main:app --reload
 - DELETE /doctors/{doctor_id}/time-off/{timeoff_id} – Cancel time-off
 
 ## 📈 Mermaid Diagrams
+
+### system sequence
+```mermaid
+sequenceDiagram
+    participant Admin as Admin (admin role)
+    participant Doctor as Doctor (doctor role)
+    participant Patient as Patient (patient role)
+    participant API as FastAPI Backend
+    participant DB as Database
+
+    Admin->>API: POST /users/doctor (Create Doctor)
+    API->>DB: INSERT INTO doctors
+    DB-->>API: Doctor Created
+    API-->>Admin: 201 Created
+
+    Doctor->>API: POST /auth/login
+    API->>DB: Validate doctor credentials
+    DB-->>API: Doctor info + JWT token
+    API-->>Doctor: 200 OK (Token)
+
+    Doctor->>API: POST /availability (JWT)
+    API->>DB: INSERT availability slots (day, time)
+    DB-->>API: Slots Created
+    API-->>Doctor: 201 Created
+
+    Patient->>API: POST /auth/login
+    API->>DB: Validate patient credentials
+    DB-->>API: Patient info + JWT token
+    API-->>Patient: 200 OK (Token)
+
+    Patient->>API: GET /availability?doctor_id=&day=
+    API->>DB: SELECT * FROM availability WHERE is_booked=false
+    DB-->>API: List of available slots
+    API-->>Patient: 200 OK (slots)
+
+    Patient->>API: POST /appointments (JWT, selected slot)
+    API->>DB: SELECT availability WHERE id AND is_booked=false
+    alt Slot Available
+        API->>DB: INSERT INTO appointments
+        API->>DB: UPDATE availability SET is_booked=true
+        DB-->>API: Appointment Created
+        API-->>Patient: 201 Created (Confirmation)
+    else Slot Already Booked
+        API-->>Patient: 409 Conflict (Slot taken)
+    end
+```
+
 ### Appointment Booking Flowchart
 ```mermaid
 flowchart TD
