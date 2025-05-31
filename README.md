@@ -1,6 +1,7 @@
 # Appointment APP
 ### Live link:
 - https://fastnestappointment.onrender.com/docs
+
 **Appointment APP** is a healthcare scheduling application designed to help clinics manage doctor–patient appointments. It enables patients to register and book available time slots with doctors, tracks doctor availability and time-off, and stores medical records for completed visits.
 
 Key features include:
@@ -60,6 +61,13 @@ alembic upgrade head
 ```bash
 python -m app.seed
 ```
+
+### 5. Run the application
+```bash
+uvicorn app.main:app --reload
+```
+---
+
 ## 📜 Schemas Overview
 #### User
 - Fields: id,name,email,hashed_password,role.
