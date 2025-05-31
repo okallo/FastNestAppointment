@@ -5,18 +5,19 @@ from uuid import UUID
 from app.schemas.doctor import DoctorOut
 
 class AvailabilityBase(BaseModel):
+    doctor_id: UUID
     start_time: datetime
     end_time: datetime
+    day_of_week: int
+
 
 class AvailabilityCreate(AvailabilityBase):
-    doctor_id: UUID
+    pass
 
 class AvailabilityOut(AvailabilityBase):
     id: int
-    is_booked: bool
-    start_time: datetime
-    end_time: datetime
     doctor: DoctorOut
+    is_booked: bool
 
     class Config:
         from_attributes = True

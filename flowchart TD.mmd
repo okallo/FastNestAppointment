@@ -1,0 +1,11 @@
+flowchart TD
+    A[Patient] --> B[Select Doctor]
+    B --> C[Select Time Slot]
+    C --> D{Doctor Available?}
+    D -- Yes --> E[Book Appointment]
+    D -- No --> F[Show Error: Try another time]
+    E --> G[Appointment Confirmed]
+    G --> H[Wait until Appointment Date]
+    H --> I[Doctor Meets Patient]
+    I --> J[Doctor Creates Medical Record]
+    J --> K[Medical Record Saved]

@@ -51,13 +51,19 @@ def list_doctors(db: Session = Depends(get_db)):
     return db.query(Doctor).all()
 
 @router.post("/time_off", status_code=201,response_model=TimeOffOut, dependencies=[Depends(require_role([Role.doctor]))])
-def set_doctor_time_off(payload: TimeOffCreate, db: Session = Depends(get_db)):
-    doctor = db.query(Doctor).filter(Doctor.user_id == get_current_user.id).first()
+def set_doctor_time_off(
+    payload: TimeOffCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
     if not doctor:
         raise HTTPException(status_code=404, detail="Doctor profile not found")
-    time_off = DoctorTimeOff(**payload.dict())
+
+    time_off = DoctorTimeOff(**payload.dict(), doctor_id=doctor.id)
     db.add(time_off)
     db.commit()
+    db.refresh(time_off)
     return {"message": "Time off set successfully"}
 
 @router.get("/{doctor_id}/time_off", response_model=List[TimeOffOut], dependencies=[Depends(require_role([Role.admin, Role.doctor]))])

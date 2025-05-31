@@ -5,10 +5,15 @@ from requests import Session
 from app.dependencies.db import get_db
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.timeoff import DoctorTimeOff
+from app.dependencies.auth import get_current_user
+from app.models.availability import Availability
+from app.models.doctor import Doctor
+from app.models.user import User
+from app.schemas.availability import AvailabilityCreate, AvailabilityOut
 
 router = APIRouter()
 
-@router.get("/doctors/{doctor_id}/available_slots", response_model=list[str])
+@router.get("/doctors/{doctor_id}", response_model=list[str])
 def get_available_slots(doctor_id: UUID, date: str, db: Session = Depends(get_db)):
     from datetime import datetime, timedelta
 
@@ -19,15 +24,14 @@ def get_available_slots(doctor_id: UUID, date: str, db: Session = Depends(get_db
 
     day_end = day_start + timedelta(days=1)
 
-    # Fetch existing booked appointments
-    appointments = db.query(Appointment).filter(
-        Appointment.doctor_id == doctor_id,
-        Appointment.status == AppointmentStatus.scheduled,
-        Appointment.start_time >= day_start,
-        Appointment.end_time <= day_end
+    availability = db.query(Availability).filter(
+        Availability.doctor_id == doctor_id,
+        Availability.start_time >= day_start,
+        Availability.end_time <= day_end,
+        Availability.is_booked == False
     ).all()
 
-    booked_slots = {(a.start_time, a.end_time) for a in appointments}
+    booked_slots = {(a.start_time, a.end_time) for a in availability}
 
     # Fetch doctor time offs
     time_offs = db.query(DoctorTimeOff).filter(
@@ -54,3 +58,18 @@ def get_available_slots(doctor_id: UUID, date: str, db: Session = Depends(get_db
         current += timedelta(minutes=20)
 
     return slots
+@router.post("/", response_model=AvailabilityOut)
+def create_availability(
+    payload: AvailabilityCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor profile not found")
+    
+    availability = Availability(**payload.dict(), doctor_id=doctor.id)
+    db.add(availability)
+    db.commit()
+    db.refresh(availability)
+    return availability
