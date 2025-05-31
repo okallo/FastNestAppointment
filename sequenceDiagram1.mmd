@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant User
+    participant System
+    participant Doctor
+    User->>System: POST /users (register)
+    System-->>User: 201 Created (user ID)
+    User->>System: POST /appointments (booking)
+    System-->>User: 200 OK (appointment confirmed)
+    System-->>Doctor: Notify new appointment
+    Note right of System: [On appointment date...]
+    Doctor->>System: POST /medical-records (create record)
+    System-->>Doctor: 201 Created (record ID)
