@@ -57,7 +57,7 @@ alembic upgrade head
 ```
 ### 5.Seed the database(optional)
 ```bash
-python -m app.seed.py
+python -m app.seed
 ```
 ## 📜 Schemas Overview
 #### User
