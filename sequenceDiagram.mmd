@@ -1,0 +1,42 @@
+sequenceDiagram
+    participant Admin as Admin (admin role)
+    participant Doctor as Doctor (doctor role)
+    participant Patient as Patient (patient role)
+    participant API as FastAPI Backend
+    participant DB as Database
+
+    Admin->>API: POST /users/doctor (Create Doctor)
+    API->>DB: INSERT INTO doctors
+    DB-->>API: Doctor Created
+    API-->>Admin: 201 Created
+
+    Doctor->>API: POST /auth/login
+    API->>DB: Validate doctor credentials
+    DB-->>API: Doctor info + JWT token
+    API-->>Doctor: 200 OK (Token)
+
+    Doctor->>API: POST /availability (JWT)
+    API->>DB: INSERT availability slots (day, time)
+    DB-->>API: Slots Created
+    API-->>Doctor: 201 Created
+
+    Patient->>API: POST /auth/login
+    API->>DB: Validate patient credentials
+    DB-->>API: Patient info + JWT token
+    API-->>Patient: 200 OK (Token)
+
+    Patient->>API: GET /availability?doctor_id=&day=
+    API->>DB: SELECT * FROM availability WHERE is_booked=false
+    DB-->>API: List of available slots
+    API-->>Patient: 200 OK (slots)
+
+    Patient->>API: POST /appointments (JWT, selected slot)
+    API->>DB: SELECT availability WHERE id AND is_booked=false
+    alt Slot Available
+        API->>DB: INSERT INTO appointments
+        API->>DB: UPDATE availability SET is_booked=true
+        DB-->>API: Appointment Created
+        API-->>Patient: 201 Created (Confirmation)
+    else Slot Already Booked
+        API-->>Patient: 409 Conflict (Slot taken)
+    end
