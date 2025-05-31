@@ -48,43 +48,7 @@ Key features include:
 
 ---
 
-## 🚀 Installation
 
-To set up the project locally:
-
-### 1. Clone the repository
-```
-
-
-**Appointment APP** is a healthcare scheduling application designed to help clinics manage doctor–patient appointments. It enables patients to register and book available time slots with doctors, tracks doctor availability and time-off, and stores medical records for completed visits.
-
-Key features include:
-
-- **Role-Based User Accounts** (Patients, Doctors, Admins)
-- **Doctor Availability & Time-Off Management**
-- **Appointment Booking & Scheduling**
-- **Medical Records for Patient Visits**
-- **Audit Logging of User Actions for Accountability**
-
----
-
-## 🧑‍⚕️ Role-Based Users
-- Patients, doctors, and admin staff
-- Fields: `id`, `name`, `email`, `role`, etc.
-
-## 👨‍⚕️ Doctor Profiles
-- Doctors have specialties and can set availability or request time-off.
-
-## 📅 Appointment Scheduling
-- Patients can view available slots and book an appointment.
-
-## 📋 Medical Records
-- After each visit, doctors create records containing notes and diagnosis.
-
-## 📜 Audit Log
-- All user actions (e.g. booking, record creation) are logged with timestamps.
-
----
 
 ## 🚀 Installation
 
